@@ -1,29 +1,26 @@
 package com.hd.hdfs.Controller;
 
-import com.hd.hdfs.hdfile.DefaultStoreFileAdapter;
+import com.hd.hdfs.hdfile.DefaultFileAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/http")
 public class HttpFileController {
 
     @Autowired
-    private DefaultStoreFileAdapter defaultStoreFileAdapter;
+    private DefaultFileAdapter defaultFileAdapter;
 
     @PostMapping("/upload")
-    public String storeFile(ServletRequest servletRequest, HttpServletRequest httpServletRequest) {
-        try {
-            servletRequest.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
+    public String uploadFile(@RequestParam("file") MultipartFile file) {
+        return defaultFileAdapter.saveFile(file);
+    }
+
+    @GetMapping("/download")
+    public void downLoadFile(@RequestParam String fileName, HttpServletResponse httpServletResponse) {
+        defaultFileAdapter.downloadFile(fileName, httpServletResponse);
     }
 }
