@@ -1,5 +1,6 @@
-package com.hd.hdfs.hdfile;
+package com.hd.hdfs.hdfile.adapter;
 
+import com.hd.hdfs.hdfile.StoreFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
