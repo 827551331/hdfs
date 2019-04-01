@@ -1,7 +1,7 @@
 package com.hd.hdfs.hdfile;
 
 /**
- * 处理文件
+ * 处理文件接口
  */
 public interface HandleFile {
 

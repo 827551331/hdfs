@@ -1,11 +1,14 @@
 package com.hd.hdfs.hdfile;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -19,7 +22,8 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class DefaultFileAdapter implements StoreFile, DownLoadFile {
 
-    String fileStorePath = "F://upload//";
+    @Value("${file-store-path}")
+    String fileStorePath;
 
     /**
      * 存储文件--MultipartFile
@@ -65,6 +69,21 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
         } else {
             return "上传失败，文件为空.";
         }
+    }
+
+    /**
+     * 存储多文件
+     *
+     * @param files
+     * @return
+     */
+    @Override
+    public String[] saveFiles(MultipartFile[] files) {
+        List<String> fileNameArray = new ArrayList<>(20);
+        for (int i = 0; i < files.length; i++) {
+            fileNameArray.add(this.saveFile(files[i]));
+        }
+        return fileNameArray.toArray(new String[fileNameArray.size()]);
     }
 
     /**

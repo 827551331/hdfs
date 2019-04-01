@@ -67,4 +67,15 @@ public class EncryptStoreFileAdapter implements StoreFile {
             return "上传失败，文件为空.";
         }
     }
+
+    /**
+     * 存储多文件
+     *
+     * @param files
+     * @return
+     */
+    @Override
+    public String[] saveFiles(MultipartFile[] files) {
+        return new String[0];
+    }
 }
