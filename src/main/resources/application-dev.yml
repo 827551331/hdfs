@@ -5,7 +5,7 @@ spring:
       max-request-size: 2048MB
 
 server:
-  port: 9093
+  port: 10001
   servlet:
     context-path: /hdfs
 

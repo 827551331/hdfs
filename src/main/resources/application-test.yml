@@ -10,4 +10,4 @@ server:
     context-path: /hdfs
 
 
-file-store-path: F://opt//upload//
+file-store-path: /opt/upload/
