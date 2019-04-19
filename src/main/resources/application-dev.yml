@@ -3,6 +3,12 @@ spring:
     multipart:
       max-file-size: 1024MB
       max-request-size: 2048MB
+  # DataSource Config
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://192.168.8.160:3306/hdfs?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123123
 
 server:
   port: 10001
@@ -11,3 +17,5 @@ server:
 
 
 file-store-path: F://opt//upload//
+
+

@@ -32,6 +32,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
      */
     @Override
     public String saveFile(MultipartFile file) {
+
         if (!file.isEmpty()) {
             // 获得原始文件名+格式
             String fileName = file.getOriginalFilename();
@@ -124,4 +125,5 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
         }
 
     }
+
 }

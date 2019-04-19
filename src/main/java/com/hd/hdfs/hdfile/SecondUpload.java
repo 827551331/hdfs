@@ -1,6 +1,6 @@
 package com.hd.hdfs.hdfile;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.hd.hdfs.entity.FileInfo;
 
 /**
  * 秒传工具类
@@ -12,8 +12,8 @@ public interface SecondUpload {
     /**
      * 检测文件是否符合秒传条件
      *
-     * @param multipartFile
+     * @param md5
      * @return
      */
-    public Boolean isFileExist(MultipartFile multipartFile);
+    public FileInfo isFileExist(String md5);
 }
