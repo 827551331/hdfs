@@ -57,7 +57,50 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
                     InputStream in = file.getInputStream();
                     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
                     zos.putNextEntry(new ZipEntry(file_o.getName()));
-                    byte[] bytes = new byte[1024];
+                    byte[] bytes = new byte[2048];
+                    int len;
+                    while ((len = in.read(bytes)) != -1) {
+                        zos.write(bytes, 0, len);
+                    }
+                    in.close();
+                    zos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return newName;
+        } else {
+            return "上传失败，文件为空.";
+        }
+    }
+
+    /**
+     * 存储文件--MultipartFile
+     */
+    public String saveFile(MultipartFile file, String md5) {
+
+        if (!file.isEmpty()) {
+            // 获得原始文件名+格式
+            String fileName = file.getOriginalFilename();
+            //截取文件名
+            String fname = fileName.substring(0, fileName.lastIndexOf("."));
+            //截取文件格式
+            String format = fileName.substring(fileName.lastIndexOf(".") + 1);
+            //原文件名+md5作为新文件名
+            String newName = fname + "_" + md5 + "." + format;
+            File f = new File(fileStorePath);
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+            String fileURI = fileStorePath + newName;
+            if (!file.isEmpty()) {
+                try {
+                    File file_o = new File(fileURI);
+                    File zipFile = new File(fileURI + ".zip");
+                    InputStream in = file.getInputStream();
+                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+                    zos.putNextEntry(new ZipEntry(file_o.getName()));
+                    byte[] bytes = new byte[2048];
                     int len;
                     while ((len = in.read(bytes)) != -1) {
                         zos.write(bytes, 0, len);

@@ -20,7 +20,14 @@ public class FileInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    /**
+     * 新文件名
+     */
     private String name;
+    /**
+     * 原文件名
+     */
+    private String usedName;
     private Long size;
     private String type;
     private String md5;

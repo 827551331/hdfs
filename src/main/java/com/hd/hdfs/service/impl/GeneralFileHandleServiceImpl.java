@@ -54,11 +54,12 @@ public class GeneralFileHandleServiceImpl implements GeneralFileHandleService {
             FileRecord fileRecord = new FileRecord();
             //如果文件已经存在
             if (fileInfo != null) {
+                fileInfo.setUsedName(file.getOriginalFilename());
                 result.add(fileInfo);
             } else {
                 fileInfo = new FileInfo();
-                String fileName = defaultFileAdapter.saveFile(file);
-                fileInfo.setName(fileName);
+                fileInfo.setUsedName(file.getOriginalFilename());
+                fileInfo.setName(defaultFileAdapter.saveFile(file, md5));
                 fileInfo.setSize(file.getSize());
                 fileInfo.setMd5(md5);
                 fileInfo.setType(file.getContentType());
