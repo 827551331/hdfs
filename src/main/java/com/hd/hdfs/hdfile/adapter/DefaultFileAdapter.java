@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -111,6 +112,14 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
                     e.printStackTrace();
                 }
             }
+
+            //返回文件名进行编码防止下载的时候因为部分字符导致下载失败
+            try {
+                newName = URLEncoder.encode(newName, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
             return newName;
         } else {
             return "上传失败，文件为空.";
