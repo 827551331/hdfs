@@ -2,6 +2,7 @@ package com.hd.hdfs.hdfile.adapter;
 
 import com.hd.hdfs.hdfile.DownLoadFile;
 import com.hd.hdfs.hdfile.StoreFile;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,11 +59,9 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
                     InputStream in = file.getInputStream();
                     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
                     zos.putNextEntry(new ZipEntry(file_o.getName()));
-                    byte[] bytes = new byte[2048];
-                    int len;
-                    while ((len = in.read(bytes)) != -1) {
-                        zos.write(bytes, 0, len);
-                    }
+
+                    //使用工具简化输入流向输出流的复制操作
+                    IOUtils.copy(in, zos);
                     in.close();
                     zos.close();
                 } catch (Exception e) {
