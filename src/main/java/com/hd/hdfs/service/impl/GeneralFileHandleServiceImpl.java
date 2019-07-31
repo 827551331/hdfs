@@ -36,6 +36,9 @@ public class GeneralFileHandleServiceImpl implements GeneralFileHandleService {
     @Autowired
     private FileRecordRepository fileRecordRepository;
 
+    @Autowired
+    private HttpServletResponse httpServletResponse;
+
     /**
      * 文件上传处理
      *
@@ -83,10 +86,9 @@ public class GeneralFileHandleServiceImpl implements GeneralFileHandleService {
      * 根据文件名下载文件
      *
      * @param fileName
-     * @param httpServletResponse
      */
     @Override
-    public void downloadFile(String fileName, HttpServletResponse httpServletResponse) {
-        defaultFileAdapter.downloadFile(fileName, httpServletResponse);
+    public void downloadFile(String fileName) {
+        defaultFileAdapter.downloadFile(fileName);
     }
 }

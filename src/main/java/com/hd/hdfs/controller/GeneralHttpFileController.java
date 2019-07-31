@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -35,10 +34,19 @@ public class GeneralHttpFileController {
      * 文件下载
      *
      * @param fileName
-     * @param httpServletResponse
      */
     @GetMapping("/download")
-    public void downLoadFile(@RequestParam String fileName, HttpServletResponse httpServletResponse) {
-        defaultFileAdapter.downloadFile(fileName, httpServletResponse);
+    public void downLoadFile(@RequestParam String fileName) {
+        defaultFileAdapter.downloadFile(fileName);
+    }
+
+    /**
+     * 文件预览
+     *
+     * @param fileName
+     */
+    @GetMapping("/load")
+    public void LoadFile(@RequestParam String fileName) {
+        defaultFileAdapter.loadFile(fileName);
     }
 }

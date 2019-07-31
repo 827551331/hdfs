@@ -1,7 +1,5 @@
 package com.hd.hdfs.hdfile;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * 文件下载接口
  *
@@ -12,5 +10,10 @@ public interface DownLoadFile {
     /**
      * 下载文件
      */
-    public void downloadFile(String fileName, HttpServletResponse httpServletResponse);
+    void downloadFile(String fileName);
+
+    /**
+     * 预览文件
+     */
+    void loadFile(String fileName);
 }

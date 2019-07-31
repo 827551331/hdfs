@@ -3,7 +3,6 @@ package com.hd.hdfs.service;
 import com.hd.hdfs.entity.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -24,7 +23,6 @@ public interface GeneralFileHandleService {
      * 根据文件名下载文件
      *
      * @param fileName
-     * @param httpServletResponse
      */
-    public void downloadFile(String fileName, HttpServletResponse httpServletResponse);
+    public void downloadFile(String fileName);
 }

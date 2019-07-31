@@ -1,9 +1,13 @@
 package com.hd.hdfs.hdfile.adapter;
 
+import com.hd.hdfs.dao.FileInfoRepository;
+import com.hd.hdfs.entity.FileInfo;
 import com.hd.hdfs.hdfile.DownLoadFile;
 import com.hd.hdfs.hdfile.StoreFile;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +32,12 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
 
     @Value("${file-store-path}")
     String fileStorePath;
+
+    @Autowired
+    private HttpServletResponse httpServletResponse;
+
+    @Autowired
+    private FileInfoRepository fileInfoRepository;
 
     /**
      * 存储文件--MultipartFile
@@ -62,6 +72,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
 
                     //使用工具简化输入流向输出流的复制操作
                     IOUtils.copy(in, zos);
+
                     in.close();
                     zos.close();
                 } catch (Exception e) {
@@ -144,7 +155,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
      * 下载文件
      */
     @Override
-    public void downloadFile(String fileName, HttpServletResponse httpServletResponse) {
+    public void downloadFile(String fileName) {
         String fileDownLoadName = "";
         try {
             fileDownLoadName = new String(fileName.getBytes(), "iso-8859-1");
@@ -174,7 +185,50 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     * 预览文件
+     *
+     * @param fileName
+     */
+    @Override
+    public void loadFile(String fileName) {
+        String fileDownLoadName = "";
+        try {
+            fileDownLoadName = new String(fileName.getBytes(), "iso-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setName(fileDownLoadName);
+        Example<FileInfo> example = Example.of(fileInfo);
+        fileInfo = fileInfoRepository.findOne(example).get();
+
+        //增加http头部，让浏览器识别下载响应
+        httpServletResponse.addHeader("Content-Type", fileInfo.getType());
+        httpServletResponse.addHeader("Content-Disposition", "inline;filename* = UTF-8''" + fileDownLoadName);
+
+        byte[] bytes = new byte[1024];
+        int temp = 0;
+        try {
+            ZipFile zipFile = new ZipFile(new File(fileStorePath + fileName + ".zip"));
+            Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
+            OutputStream os = httpServletResponse.getOutputStream();
+            InputStream is = null;
+
+            is = zipFile.getInputStream(enumeration.nextElement());
+
+            while ((temp = is.read(bytes)) != -1) {
+                os.write(bytes, 0, temp);
+            }
+            is.close();
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

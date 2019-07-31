@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 
+
+@Deprecated
 @RestController
 @RequestMapping("/http")
 public class HttpFileController {
@@ -44,6 +46,6 @@ public class HttpFileController {
      */
     @GetMapping("/download")
     public void downLoadFile(@RequestParam String fileName, HttpServletResponse httpServletResponse) {
-        defaultFileAdapter.downloadFile(fileName, httpServletResponse);
+        defaultFileAdapter.downloadFile(fileName);
     }
 }
