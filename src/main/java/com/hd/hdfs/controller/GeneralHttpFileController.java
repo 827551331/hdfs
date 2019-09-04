@@ -2,6 +2,7 @@ package com.hd.hdfs.controller;
 
 import com.hd.hdfs.entity.FileInfo;
 import com.hd.hdfs.hdfile.adapter.DefaultFileAdapter;
+import com.hd.hdfs.hdfile.adapter.LoadPicAdapter;
 import com.hd.hdfs.service.GeneralFileHandleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ public class GeneralHttpFileController {
 
     @Autowired
     private DefaultFileAdapter defaultFileAdapter;
+
+    @Autowired
+    private LoadPicAdapter loadPicAdapter;
 
     @Autowired
     private GeneralFileHandleService generalFileHandleServiceImpl;
@@ -38,6 +42,16 @@ public class GeneralHttpFileController {
     @GetMapping("/download")
     public void downLoadFile(@RequestParam String fileName) {
         defaultFileAdapter.downloadFile(fileName);
+    }
+
+    /**
+     * 图片预览
+     *
+     * @param fileName
+     */
+    @GetMapping("/loadPic")
+    public void LoadPicFile(@RequestParam String fileName) {
+        loadPicAdapter.loadFile(fileName);
     }
 
     /**
