@@ -45,6 +45,16 @@ public class GeneralHttpFileController {
     }
 
     /**
+     * 文件批量下载
+     *
+     * @param fileNames
+     */
+    @PostMapping("/batchDownload")
+    public void batchDownLoadFile(@RequestBody String[] fileNames) {
+        defaultFileAdapter.batchDownloadFile(fileNames);
+    }
+
+    /**
      * 图片预览
      *
      * @param fileName

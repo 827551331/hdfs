@@ -188,6 +188,67 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
     }
 
     /**
+     * 批量下载下载文件
+     *
+     * @param fileNames
+     */
+    @Override
+    public void batchDownloadFile(String[] fileNames) {
+
+        //增加http头部，让浏览器识别下载响应
+        httpServletResponse.addHeader("Content-Type", "application/octet-stream");
+        httpServletResponse.addHeader("Content-Disposition", "attachment;filename* = UTF-8''附件.zip");
+
+        // 创建 ZipOutputStream
+        ZipOutputStream zipOutputStream = null;
+        // 实例化 ZipOutputStream 对象
+        try {
+            zipOutputStream = new ZipOutputStream(httpServletResponse.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        for (String fileName : fileNames) {
+            String fileDownLoadName = "";
+            try {
+                fileDownLoadName = new String(fileName.getBytes(), "iso-8859-1");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            // 创建 ZipEntry 对象
+            ZipEntry zipEntryResult = null;
+            try {
+                ZipFile zipFileResource = new ZipFile(new File(fileStorePath + fileName + ".zip"));
+                Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFileResource.entries();
+                InputStream is = null;
+                is = zipFileResource.getInputStream(enumeration.nextElement());
+
+                // 实例化 ZipEntry 对象，源文件数组中的当前文件
+                zipEntryResult = new ZipEntry(fileName);
+                zipOutputStream.putNextEntry(zipEntryResult);
+
+                // 该变量记录每次真正读的字节个数
+                int len;
+                // 定义每次读取的字节数组
+                byte[] buffer = new byte[1024];
+                while ((len = is.read(buffer)) > 0) {
+                    zipOutputStream.write(buffer, 0, len);
+                }
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            zipOutputStream.flush();
+            zipOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 预览文件
      *
      * @param fileName

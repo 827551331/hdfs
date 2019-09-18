@@ -13,6 +13,11 @@ public interface DownLoadFile {
     void downloadFile(String fileName);
 
     /**
+     * 批量下载下载文件
+     */
+    void batchDownloadFile(String[] fileNames);
+
+    /**
      * 预览文件
      */
     void loadFile(String fileName);
