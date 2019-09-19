@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -158,7 +159,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
     public void downloadFile(String fileName) {
         String fileDownLoadName = "";
         try {
-            fileDownLoadName = new String(fileName.getBytes(), "iso-8859-1");
+            fileDownLoadName = URLDecoder.decode(fileName, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -196,7 +197,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
     public void batchDownloadFile(String[] fileNames) {
 
         //增加http头部，让浏览器识别下载响应
-        httpServletResponse.addHeader("Content-Type", "application/octet-stream");
+        httpServletResponse.addHeader("Content-Type", "application/zip");
         httpServletResponse.addHeader("Content-Disposition", "attachment;filename* = UTF-8''附件.zip");
 
         // 创建 ZipOutputStream
@@ -208,14 +209,22 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
             e.printStackTrace();
         }
 
+        FileInfo fileInfo = null;
 
         for (String fileName : fileNames) {
-            String fileDownLoadName = "";
+
+            fileInfo = new FileInfo();
+            fileInfo.setName(fileName);
+            Example<FileInfo> example = Example.of(fileInfo);
+            FileInfo fileInfo_result = fileInfoRepository.findOne(example).get();
+            String uesdName = fileInfo_result.getUsedName();
+
             try {
-                fileDownLoadName = new String(fileName.getBytes(), "iso-8859-1");
+                fileName = URLDecoder.decode(fileName, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+
             // 创建 ZipEntry 对象
             ZipEntry zipEntryResult = null;
             try {
@@ -225,7 +234,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
                 is = zipFileResource.getInputStream(enumeration.nextElement());
 
                 // 实例化 ZipEntry 对象，源文件数组中的当前文件
-                zipEntryResult = new ZipEntry(fileName);
+                zipEntryResult = new ZipEntry(uesdName);
                 zipOutputStream.putNextEntry(zipEntryResult);
 
                 // 该变量记录每次真正读的字节个数
