@@ -4,7 +4,7 @@ import com.hd.hdfs.dao.FileInfoRepository;
 import com.hd.hdfs.dao.FileRecordRepository;
 import com.hd.hdfs.entity.FileInfo;
 import com.hd.hdfs.entity.FileRecord;
-import com.hd.hdfs.hdfile.adapter.DefaultFileAdapter;
+import com.hd.hdfs.hdfile.adapter.FixedNameFileAdapter;
 import com.hd.hdfs.hdfile.adapter.SecondUploadAdapter;
 import com.hd.hdfs.service.FileHandleService;
 import com.hd.hdfs.util.FileUtil;
@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class GeneralFileHandleServiceImpl implements FileHandleService {
+public class FixedFileHandleServiceImpl implements FileHandleService {
 
     @Value("${file-store-path}")
     String fileStorePath;
@@ -27,14 +27,13 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
     private SecondUploadAdapter secondUploadAdapter;
 
     @Autowired
-    private DefaultFileAdapter defaultFileAdapter;
+    private FixedNameFileAdapter fixedNameFileAdapter;
 
     @Autowired
     private FileInfoRepository fileInfoRepository;
 
     @Autowired
     private FileRecordRepository fileRecordRepository;
-
 
     /**
      * 文件上传处理
@@ -50,24 +49,19 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
         for (MultipartFile file : files) {
             //获取文件MD5
             String md5 = FileUtil.getMd5(file);
-            FileInfo fileInfo = secondUploadAdapter.isFileExist(md5);
+            FileInfo fileInfo;
             FileRecord fileRecord = new FileRecord();
-            //如果文件已经存在
-            if (fileInfo != null) {
-                fileInfo.setUsedName(file.getOriginalFilename());
-                result.add(fileInfo);
-            } else {
-                fileInfo = new FileInfo();
-                fileInfo.setUsedName(file.getOriginalFilename());
-                fileInfo.setName(defaultFileAdapter.saveFile(file, md5));
-                fileInfo.setSize(file.getSize());
-                fileInfo.setMd5(md5);
-                fileInfo.setType(file.getContentType());
-                fileInfo.setPath(fileStorePath);
-                fileInfo.setUploadTime(new Date());
-                fileInfo = fileInfoRepository.saveAndFlush(fileInfo);
-                result.add(fileInfo);
-            }
+
+            fileInfo = new FileInfo();
+            fileInfo.setUsedName(file.getOriginalFilename());
+            fileInfo.setName(fixedNameFileAdapter.saveFile(file, md5));
+            fileInfo.setSize(file.getSize());
+            fileInfo.setMd5(md5);
+            fileInfo.setType(file.getContentType());
+            fileInfo.setPath(fileStorePath);
+            fileInfo.setUploadTime(new Date());
+            fileInfo = fileInfoRepository.saveAndFlush(fileInfo);
+            result.add(fileInfo);
 
             fileRecord.setFileInfoId(fileInfo.getId());
             fileRecord.setFileState(1);
@@ -86,6 +80,6 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
      */
     @Override
     public void downloadFile(String fileName) {
-        defaultFileAdapter.downloadFile(fileName);
+        fixedNameFileAdapter.downloadFile(fileName);
     }
 }

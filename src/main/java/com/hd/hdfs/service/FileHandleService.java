@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author wang_yw
  */
-public interface GeneralFileHandleService {
+public interface FileHandleService {
 
     /**
      * 文件上传处理

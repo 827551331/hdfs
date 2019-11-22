@@ -3,7 +3,7 @@ package com.hd.hdfs.controller;
 import com.hd.hdfs.entity.FileInfo;
 import com.hd.hdfs.hdfile.adapter.DefaultFileAdapter;
 import com.hd.hdfs.hdfile.adapter.LoadPicAdapter;
-import com.hd.hdfs.service.GeneralFileHandleService;
+import com.hd.hdfs.service.FileHandleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +21,10 @@ public class GeneralHttpFileController {
     private LoadPicAdapter loadPicAdapter;
 
     @Autowired
-    private GeneralFileHandleService generalFileHandleServiceImpl;
+    private FileHandleService generalFileHandleServiceImpl;
+
+    @Autowired
+    private FileHandleService fixedFileHandleServiceImpl;
 
     /**
      * 批量文件上传
@@ -32,6 +35,17 @@ public class GeneralHttpFileController {
     @PostMapping("/uploadFiles")
     public List<FileInfo> uploadFile(@RequestParam("file") MultipartFile[] files) {
         return generalFileHandleServiceImpl.uploadFile(files);
+    }
+
+    /**
+     * 固定名称文件批量文件上传（后台不修改文件名）
+     *
+     * @param files
+     * @return
+     */
+    @PostMapping("/uploadFiles/fixedName")
+    public List<FileInfo> uploadFileByFixedName(@RequestParam("file") MultipartFile[] files) {
+        return fixedFileHandleServiceImpl.uploadFile(files);
     }
 
     /**
@@ -73,4 +87,5 @@ public class GeneralHttpFileController {
     public void LoadFile(@RequestParam String fileName) {
         defaultFileAdapter.loadFile(fileName);
     }
+
 }
