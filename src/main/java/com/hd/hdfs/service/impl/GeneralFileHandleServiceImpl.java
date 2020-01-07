@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,6 +87,7 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
      */
     @Override
     public void downloadFile(String fileName) {
-        defaultFileAdapter.downloadFile(fileName);
+        FileInfo fileInfo = fileInfoRepository.findByName(URLEncoder.encode(fileName));
+        defaultFileAdapter.downloadFileByFileInfo(fileInfo);
     }
 }

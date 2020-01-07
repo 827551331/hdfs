@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
-/**
- * jar运行（内嵌tomcat方案）
- */
+///**
+// * jar运行（内嵌tomcat方案）
+// */
 @EnableCaching
 @SpringBootApplication
 public class HdfsApplication {

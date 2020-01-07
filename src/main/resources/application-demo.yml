@@ -16,4 +16,4 @@ server:
     context-path: /hdfs
 
 
-file-store-path: C://opt//upload//
+file-store-path: C://opt//upload// 

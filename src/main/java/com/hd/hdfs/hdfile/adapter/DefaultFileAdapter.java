@@ -3,6 +3,7 @@ package com.hd.hdfs.hdfile.adapter;
 import com.hd.hdfs.dao.FileInfoRepository;
 import com.hd.hdfs.entity.FileInfo;
 import com.hd.hdfs.hdfile.DownLoadFile;
+import com.hd.hdfs.hdfile.DownLoadFileByFileInfo;
 import com.hd.hdfs.hdfile.StoreFile;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ import java.util.zip.ZipOutputStream;
  * @date 2019-03-20
  */
 @Component
-public class DefaultFileAdapter implements StoreFile, DownLoadFile {
+public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFileByFileInfo {
 
     @Value("${file-store-path}")
     String fileStorePath;
@@ -157,20 +158,56 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile {
      */
     @Override
     public void downloadFile(String fileName) {
-        String fileDownLoadName = "";
+        //增加http头部，让浏览器识别下载响应
+        httpServletResponse.addHeader("Content-Type", "application/octet-stream");
         try {
-            fileDownLoadName = URLDecoder.decode(fileName, "UTF-8");
+            httpServletResponse.addHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        //增加http头部，让浏览器识别下载响应
-        httpServletResponse.addHeader("Content-Type", "application/octet-stream");
-        httpServletResponse.addHeader("Content-Disposition", "attachment;filename* = UTF-8''" + fileDownLoadName);
 
         byte[] bytes = new byte[1024];
         int temp = 0;
         try {
             ZipFile zipFile = new ZipFile(new File(fileStorePath + fileName + ".zip"));
+            Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
+            OutputStream os = httpServletResponse.getOutputStream();
+            InputStream is = null;
+
+            is = zipFile.getInputStream(enumeration.nextElement());
+
+            while ((temp = is.read(bytes)) != -1) {
+                os.write(bytes, 0, temp);
+            }
+            is.close();
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 下载文件
+     *
+     * @param fileInfo 文件信息对象
+     */
+    @Override
+    public void downloadFileByFileInfo(FileInfo fileInfo) {
+
+
+        //增加http头部，让浏览器识别下载响应
+        httpServletResponse.addHeader("Content-Type", "application/octet-stream");
+        try {
+            httpServletResponse.addHeader("Content-Disposition", "attachment;filename=" + new String(fileInfo.getUsedName().getBytes("utf-8"), "ISO8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        byte[] bytes = new byte[1024];
+        int temp = 0;
+        try {
+            ZipFile zipFile = new ZipFile(new File(fileInfo.getPath() + fileInfo.getName() + ".zip"));
             Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
             OutputStream os = httpServletResponse.getOutputStream();
             InputStream is = null;

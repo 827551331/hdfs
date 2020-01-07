@@ -55,7 +55,7 @@ public class GeneralHttpFileController {
      */
     @GetMapping("/download")
     public void downLoadFile(@RequestParam String fileName) {
-        defaultFileAdapter.downloadFile(fileName);
+        generalFileHandleServiceImpl.downloadFile(fileName);
     }
 
     /**
