@@ -207,7 +207,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
         byte[] bytes = new byte[1024];
         int temp = 0;
         try {
-            ZipFile zipFile = new ZipFile(new File(fileInfo.getPath() + fileInfo.getName() + ".zip"));
+            ZipFile zipFile = new ZipFile(new File(fileInfo.getPath() + URLDecoder.decode(fileInfo.getName()) + ".zip"));
             Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
             OutputStream os = httpServletResponse.getOutputStream();
             InputStream is = null;
