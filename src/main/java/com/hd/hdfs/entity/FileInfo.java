@@ -2,6 +2,7 @@ package com.hd.hdfs.entity;
 
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Date;
  */
 @Data
 @Entity
+@ToString
 @Table(name = "file_info")
 public class FileInfo {
 

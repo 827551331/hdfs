@@ -82,4 +82,14 @@ public class FixedFileHandleServiceImpl implements FileHandleService {
     public void downloadFile(String fileName) {
         fixedNameFileAdapter.downloadFile(fileName);
     }
+
+    /**
+     * 根据文件 id 下载文件
+     *
+     * @param id
+     */
+    @Override
+    public void downloadFileById(String id) {
+
+    }
 }

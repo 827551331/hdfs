@@ -6,6 +6,8 @@ import com.hd.hdfs.hdfile.DownLoadFile;
 import com.hd.hdfs.hdfile.DownLoadFileByFileInfo;
 import com.hd.hdfs.hdfile.StoreFile;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -31,6 +34,8 @@ import java.util.zip.ZipOutputStream;
  */
 @Component
 public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFileByFileInfo {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultFileAdapter.class);
 
     @Value("${file-store-path}")
     String fileStorePath;
@@ -195,6 +200,8 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
     @Override
     public void downloadFileByFileInfo(FileInfo fileInfo) {
 
+        logger.info("待下载文件信息：{}", fileInfo.toString());
+        System.out.println("待下载文件信息：" + fileInfo.toString());
 
         //增加http头部，让浏览器识别下载响应
         httpServletResponse.addHeader("Content-Type", "application/octet-stream");
@@ -207,7 +214,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
         byte[] bytes = new byte[1024];
         int temp = 0;
         try {
-            ZipFile zipFile = new ZipFile(new File(fileInfo.getPath() + URLDecoder.decode(fileInfo.getName()) + ".zip"));
+            ZipFile zipFile = new ZipFile(new File(fileInfo.getPath() + URLDecoder.decode(fileInfo.getName(), "UTF-8") + ".zip"));
             Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
             OutputStream os = httpServletResponse.getOutputStream();
             InputStream is = null;

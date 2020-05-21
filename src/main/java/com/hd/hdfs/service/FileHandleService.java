@@ -24,5 +24,12 @@ public interface FileHandleService {
      *
      * @param fileName
      */
-    public void downloadFile(String fileName);
+    void downloadFile(String fileName);
+
+    /**
+     * 根据文件 id 下载文件
+     *
+     * @param id
+     */
+    void downloadFileById(String id);
 }

@@ -5,6 +5,7 @@ import com.hd.hdfs.hdfile.adapter.DefaultFileAdapter;
 import com.hd.hdfs.hdfile.adapter.LoadPicAdapter;
 import com.hd.hdfs.service.FileHandleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,9 +22,11 @@ public class GeneralHttpFileController {
     private LoadPicAdapter loadPicAdapter;
 
     @Autowired
+    @Qualifier("generalFileHandleServiceImpl")
     private FileHandleService generalFileHandleServiceImpl;
 
     @Autowired
+    @Qualifier("fixedFileHandleServiceImpl")
     private FileHandleService fixedFileHandleServiceImpl;
 
     /**
@@ -56,6 +59,16 @@ public class GeneralHttpFileController {
     @GetMapping("/download")
     public void downLoadFile(@RequestParam String fileName) {
         generalFileHandleServiceImpl.downloadFile(fileName);
+    }
+
+    /**
+     * 根据 id 文件下载
+     *
+     * @param id
+     */
+    @GetMapping("/downloadById")
+    public void downLoadFileById(@RequestParam String id) {
+        generalFileHandleServiceImpl.downloadFileById(id);
     }
 
     /**
