@@ -3,11 +3,13 @@ package com.hd.hdfs;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 ///**
 // * jar运行（内嵌tomcat方案）
 // */
 @EnableCaching
+@EnableScheduling
 @SpringBootApplication
 public class HdfsApplication {
 

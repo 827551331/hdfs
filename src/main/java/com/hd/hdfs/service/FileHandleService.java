@@ -17,7 +17,7 @@ public interface FileHandleService {
      *
      * @return
      */
-    public List<FileInfo> uploadFile(MultipartFile[] files);
+    List<FileInfo> uploadFile(MultipartFile[] files);
 
     /**
      * 根据文件名下载文件

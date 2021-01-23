@@ -5,6 +5,11 @@ package com.hd.hdfs.hdfile;
  *
  * @author wang_yw
  */
+/**
+ * 文件下载接口
+ *
+ * @author wang_yw
+ */
 public interface DownLoadFile {
 
     /**

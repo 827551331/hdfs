@@ -5,6 +5,7 @@ import com.hd.hdfs.entity.FileInfo;
 import com.hd.hdfs.hdfile.DownLoadFile;
 import com.hd.hdfs.hdfile.DownLoadFileByFileInfo;
 import com.hd.hdfs.hdfile.StoreFile;
+import com.hd.hdfs.util.FileUtil;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -72,16 +72,19 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
             if (!file.isEmpty()) {
                 try {
                     File file_o = new File(fileURI);
-                    File zipFile = new File(fileURI + ".zip");
-                    InputStream in = file.getInputStream();
-                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
-                    zos.putNextEntry(new ZipEntry(file_o.getName()));
+                    file.transferTo(file_o);
 
-                    //使用工具简化输入流向输出流的复制操作
-                    IOUtils.copy(in, zos);
-
-                    in.close();
-                    zos.close();
+//                    File zipFile = new File(fileURI + ".zip");
+//                    InputStream in = new BufferedInputStream(file.getInputStream());
+//                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+//                    zos.putNextEntry(new ZipEntry(file_o.getName()));
+//
+//                    //使用工具简化输入流向输出流的复制操作
+//                    IOUtils.copy(in, zos);
+//                    zos.closeEntry();
+//
+//                    in.close();
+//                    zos.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -114,17 +117,17 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
             if (!file.isEmpty()) {
                 try {
                     File file_o = new File(fileURI);
-                    File zipFile = new File(fileURI + ".zip");
-                    InputStream in = file.getInputStream();
-                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
-                    zos.putNextEntry(new ZipEntry(file_o.getName()));
-                    byte[] bytes = new byte[2048];
-                    int len;
-                    while ((len = in.read(bytes)) != -1) {
-                        zos.write(bytes, 0, len);
-                    }
-                    in.close();
-                    zos.close();
+//                    File zipFile = new File(fileURI + ".zip");
+
+                    file.transferTo(file_o);
+
+//                    InputStream in = new BufferedInputStream(file.getInputStream());
+//                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+//                    zos.putNextEntry(new ZipEntry(file_o.getName()));
+//                    IOUtils.copy(in, zos);
+//                    zos.closeEntry();
+//                    in.close();
+//                    zos.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -210,21 +213,28 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
-        byte[] bytes = new byte[1024];
-        int temp = 0;
         try {
-            ZipFile zipFile = new ZipFile(new File(fileInfo.getPath() + URLDecoder.decode(fileInfo.getName(), "UTF-8") + ".zip"));
-            Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
             OutputStream os = httpServletResponse.getOutputStream();
-            InputStream is = null;
+            if ("zip".equalsIgnoreCase(FileUtil.getType(fileInfo.getName()))) {
+                InputStream is = new BufferedInputStream(new FileInputStream(new File(fileInfo.getPath() + URLDecoder.decode(FileUtil.getName(fileInfo.getName()), "UTF-8") + ".zip")));
+                IOUtils.copy(is, os);
+            } else {
+                ZipFile zipFile = null;
+                File file1 = new File(fileInfo.getPath() + URLDecoder.decode(FileUtil.getName(fileInfo.getName()), "UTF-8") + ".zip");
+                if (file1.exists()) {
+                    zipFile = new ZipFile(file1);
+                } else {
+                    zipFile = new ZipFile(new File(fileInfo.getPath() + URLDecoder.decode(fileInfo.getName(), "UTF-8") + ".zip"));
+                    ;
+                }
 
-            is = zipFile.getInputStream(enumeration.nextElement());
-
-            while ((temp = is.read(bytes)) != -1) {
-                os.write(bytes, 0, temp);
+                Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
+                InputStream is = null;
+                is = zipFile.getInputStream(enumeration.nextElement());
+                IOUtils.copy(is, os);
+                is.close();
             }
-            is.close();
+
             os.flush();
             os.close();
         } catch (IOException e) {
@@ -342,6 +352,14 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
             os.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        File file = new File("D://opt//upload//");
+        if (file.isDirectory()) {
+            String[] array = file.list();
+            System.out.println(array.toString());
         }
     }
 

@@ -39,4 +39,24 @@ public class FileUtil {
         return null;
 
     }
+
+    /**
+     * description: test.txt -> return test
+     * version: 1.0
+     * date: 2021/1/22 13:32
+     * author: wang_yw
+     */
+    public static String getName(String fileName) {
+        return fileName.substring(0, fileName.lastIndexOf("."));
+    }
+
+    /**
+     * description: test.txt -> return txt
+     * version: 1.0
+     * date: 2021/1/22 13:32
+     * author: wang_yw
+     */
+    public static String getType(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
 }
