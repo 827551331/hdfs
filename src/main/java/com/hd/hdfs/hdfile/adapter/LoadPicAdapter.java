@@ -1,6 +1,7 @@
 package com.hd.hdfs.hdfile.adapter;
 
 import com.hd.hdfs.hdfile.LoadFile;
+import com.hd.hdfs.util.FileUtil;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,17 +39,25 @@ public class LoadPicAdapter implements LoadFile {
         httpServletResponse.addHeader("Content-Type", "application/octet-stream");
         httpServletResponse.addHeader("Content-Disposition", "attachment;filename* = UTF-8''" + fileDownLoadName);
 
+
         byte[] bytes = new byte[1024];
         int temp = 0;
         try {
-            ZipFile zipFile = new ZipFile(new File(fileStorePath + fileName + ".zip"));
-            Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
             OutputStream os = httpServletResponse.getOutputStream();
             InputStream is = null;
 
-            is = zipFile.getInputStream(enumeration.nextElement());
+            File pic = new File(fileStorePath + fileName + ".zip");
+            if (pic.exists()) {
 
-            Thumbnails.of(is).size(600,600).toOutputStream(os);
+                ZipFile zipFile = new ZipFile(pic);
+                Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
+                is = zipFile.getInputStream(enumeration.nextElement());
+            } else {
+                is = new FileInputStream(new File(fileStorePath + fileName));
+            }
+
+
+            Thumbnails.of(is).size(600, 600).toOutputStream(os);
 
             is.close();
             os.flush();
