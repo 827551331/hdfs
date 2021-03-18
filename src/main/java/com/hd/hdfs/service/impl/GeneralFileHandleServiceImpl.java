@@ -54,9 +54,13 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
 
 
         for (MultipartFile file : files) {
-            //获取文件MD5
-            String md5 = FileUtil.getMd5(file);
-            FileInfo fileInfo = secondUploadAdapter.isFileExist(md5);
+            //获取文件MD5(后端做 MD5 验证，对小文件收益不大，大文件计算时间太长，负收益 20210318，取消此流程)
+            //String md5 = FileUtil.getMd5(file);
+            //FileInfo fileInfo = secondUploadAdapter.isFileExist(md5);
+
+            String md5 = "";
+            FileInfo fileInfo = null;
+
             FileRecord fileRecord = new FileRecord();
             //如果文件已经存在
             if (fileInfo != null) {

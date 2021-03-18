@@ -7,6 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -53,5 +56,25 @@ public class ScheduleWork {
                 }
             }
         }
+    }
+
+
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>(1 << 5);
+
+        Class<ArrayList> arrayListClass = (Class<ArrayList>) list.getClass();
+
+        for (Field field : arrayListClass.getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                if ("elementData".equalsIgnoreCase(field.getName())) {
+                    System.out.println("数组容量：" + ((Object[]) field.get(list)).length);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+            }
+        }
+
     }
 }
