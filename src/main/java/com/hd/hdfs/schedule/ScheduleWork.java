@@ -25,7 +25,7 @@ public class ScheduleWork {
     @Value("${file-store-path}")
     String fileStorePath;
 
-    @Scheduled(cron = "0/3 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void perSecond() {
         //进入每3s执行定时任务
         this.compressFile();
@@ -40,13 +40,15 @@ public class ScheduleWork {
                     FileInputStream fis = new FileInputStream(file);
 
                     File zipFile = new File(fileStorePath + FileUtil.getName(file.getName()) + ".zip");
-                    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
-                    zos.putNextEntry(new ZipEntry(file.getName()));
-                    IOUtils.copy(fis, zos);
-                    zos.closeEntry();
 
+                    if (!zipFile.exists()) {
+                        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+                        zos.putNextEntry(new ZipEntry(file.getName()));
+                        IOUtils.copy(fis, zos);
+                        zos.closeEntry();
+                        zos.close();
+                    }
                     fis.close();
-                    zos.close();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

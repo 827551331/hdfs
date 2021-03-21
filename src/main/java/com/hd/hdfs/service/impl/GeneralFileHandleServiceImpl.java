@@ -7,6 +7,7 @@ import com.hd.hdfs.entity.FileRecord;
 import com.hd.hdfs.hdfile.adapter.DefaultFileAdapter;
 import com.hd.hdfs.hdfile.adapter.SecondUploadAdapter;
 import com.hd.hdfs.service.FileHandleService;
+import com.hd.hdfs.thread.ASyncFileThread;
 import com.hd.hdfs.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,9 +68,14 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
                 fileInfo.setUsedName(file.getOriginalFilename());
                 result.add(fileInfo);
             } else {
+                //异步处理文件落盘（IO）
+                System.out.println("异步处理文件");
+                new Thread(new ASyncFileThread(file, fileStorePath)).start();
+
                 fileInfo = new FileInfo();
                 fileInfo.setUsedName(file.getOriginalFilename());
-                fileInfo.setName(defaultFileAdapter.saveFile(file, md5));
+                //fileInfo.setName(defaultFileAdapter.saveFile(file, md5));
+                fileInfo.setName(this.getFileName(file));
                 fileInfo.setSize(file.getSize());
                 fileInfo.setMd5(md5);
                 fileInfo.setType(file.getContentType());
@@ -111,5 +117,20 @@ public class GeneralFileHandleServiceImpl implements FileHandleService {
         FileInfo fileInfo = fileInfoRepository.findById(Integer.valueOf(id)).get();
         logger.info("文件信息：{}", fileInfo.toString());
         defaultFileAdapter.downloadFileByFileInfo(fileInfo);
+    }
+
+    private String getFileName(MultipartFile file) {
+        // 获得原始文件名+格式
+        String fileName = file.getOriginalFilename();
+        //截取文件名
+        String fname = fileName.substring(0, fileName.lastIndexOf("."));
+        //截取文件格式
+        String format = fileName.substring(fileName.lastIndexOf(".") + 1);
+        //获取当前时间(精确到毫秒)
+        String timeMS = String.valueOf(System.currentTimeMillis());
+        //原文件名+当前时间戳作为新文件名
+        String newName = fname + "_" + timeMS + "." + format;
+
+        return newName;
     }
 }

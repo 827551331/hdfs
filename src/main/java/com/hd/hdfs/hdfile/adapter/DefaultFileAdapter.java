@@ -60,8 +60,7 @@ public class DefaultFileAdapter implements StoreFile, DownLoadFile, DownLoadFile
             //截取文件格式
             String format = fileName.substring(fileName.lastIndexOf(".") + 1);
             //获取当前时间(精确到毫秒)
-            long MS = System.currentTimeMillis();
-            String timeMS = String.valueOf(MS);
+            String timeMS = String.valueOf(System.currentTimeMillis());
             //原文件名+当前时间戳作为新文件名
             String newName = fname + "_" + timeMS + "." + format;
             File f = new File(fileStorePath);
